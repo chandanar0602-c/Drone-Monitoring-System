@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKY GUARDIANS | Ground Station</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><span class="brand-icon">✦</span><div><b>SKY GUARDIANS</b><small>GROUND STATION</small></div></div>
+  <div class="nav-label">MONITORING</div>
+  <a class="active" href="#overview">▦ &nbsp; Dashboard</a>
+  <a href="#flight">⌁ &nbsp; Flight Monitoring</a><a href="#gps">◎ &nbsp; GPS & Map</a>
+  <a href="#battery">▰ &nbsp; Battery</a><a href="#motors">◉ &nbsp; Motor Health</a>
+  <a href="#camera">▣ &nbsp; Camera Feed</a><a href="#lidar">⌖ &nbsp; LiDAR</a>
+  <a href="#communication">⌁ &nbsp; Communication</a><a href="#alerts">⚑ &nbsp; Alerts & Logs</a>
+  <div class="sidebar-foot">PROTOTYPE BUILD<br><span>Hardware not connected</span></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow">UNMANNED AIRCRAFT SYSTEMS / LIVE MONITOR</div><h1>Mission Overview</h1></div>
+<div class="top-status"><span class="pulse"></span><span id="connection">SIMULATION CONNECTED</span><span class="pill">SIMULATED DATA</span></div></header>
+<section class="banner"><div><b>SIMULATION MODE</b><p>All changing telemetry values on this dashboard are generated for demonstration. No aircraft is connected.</p></div><div class="banner-time" id="clock">--:--:--</div></section>
+<section class="grid stats" id="overview">
+  <article class="card stat"><div class="card-label">ALTITUDE <span>↗</span></div><div class="metric"><strong id="altitude">--</strong><small>m</small></div><div class="sub">Above take-off point</div></article>
+  <article class="card stat"><div class="card-label">GROUND SPEED <span>➤</span></div><div class="metric"><strong id="speed">--</strong><small>m/s</small></div><div class="sub">Current velocity</div></article>
+  <article class="card stat"><div class="card-label">BATTERY <span>▰</span></div><div class="metric"><strong id="battery">--</strong><small>%</small></div><div class="progress"><i id="batterybar"></i></div><div class="sub" id="batteryStatus">Waiting for data</div></article>
+  <article class="card stat"><div class="card-label">GPS SATELLITES <span>◎</span></div><div class="metric"><strong id="satellites">--</strong><small> sats</small></div><div class="sub" id="gpsfix">GPS status</div></article>
+</section>
+<section class="grid two">
+  <article class="card" id="flight"><div class="section-head"><div><div class="eyebrow">FLIGHT TELEMETRY</div><h2>Aircraft Status</h2></div><span class="tag" id="armed">DISARMED</span></div>
+    <div class="phase" id="phase">Awaiting telemetry</div>
+    <div class="data-grid"><div><small>FLIGHT MODE</small><b id="mode">--</b></div><div><small>HEADING</small><b id="heading">--°</b></div><div><small>ROLL</small><b id="roll">--°</b></div><div><small>PITCH</small><b id="pitch">--°</b></div><div><small>YAW</small><b id="yaw">--°</b></div><div><small>VERTICAL SPEED</small><b id="vertical">-- m/s</b></div></div>
+  </article>
+  <article class="card" id="gps"><div class="section-head"><div><div class="eyebrow">NAVIGATION</div><h2>GPS Position</h2></div><span class="tag green">3D FIX · DEMO</span></div>
+    <div id="map"></div><div class="coordinates"><span>LAT <b id="lat">--</b></span><span>LON <b id="lon">--</b></span><span>ALT <b id="gpsalt">--</b></span></div>
+  </article>
+</section>
+<section class="grid two">
+  <article class="card" id="battery"><div class="section-head"><div><div class="eyebrow">POWER SYSTEM</div><h2>Battery Monitoring</h2></div><span class="tag" id="batteryTag">SIMULATED</span></div>
+    <div class="battery-big"><strong id="batteryBig">--%</strong><span>Estimated remaining charge</span></div><div class="data-grid"><div><small>VOLTAGE</small><b id="voltage">-- V</b></div><div><small>CURRENT</small><b id="current">-- A</b></div><div><small>CAPACITY LEFT</small><b id="capacity">-- mAh</b></div><div><small>EST. FLIGHT TIME</small><b id="flighttime">-- min</b></div></div>
+  </article>
+  <article class="card" id="motors"><div class="section-head"><div><div class="eyebrow">PROPULSION</div><h2>Motor & ESC Health</h2></div><span class="tag">SIMULATED</span></div><div id="motorList" class="motor-list"></div></article>
+</section>
+<section class="grid two">
+  <article class="card" id="lidar"><div class="section-head"><div><div class="eyebrow">DISTANCE SENSING</div><h2>LiDAR & Obstacles</h2></div><span class="tag">SIMULATED</span></div>
+    <div class="lidar-main"><div class="radar">⌖<span id="frontDistance">-- m</span></div><div><small>FRONT DISTANCE</small><h2 id="obstacleStatus">--</h2><p class="muted">Distance visualization only. This system does not perform obstacle avoidance.</p></div></div>
+    <div class="sector-grid" id="sectors"></div>
+  </article>
+  <article class="card" id="communication"><div class="section-head"><div><div class="eyebrow">LINK HEALTH</div><h2>Communication</h2></div><span class="tag green">DEMO LINK</span></div>
+    <div class="data-grid"><div><small>TELEMETRY</small><b id="telemetry">--</b></div><div><small>HM30 VIDEO LINK</small><b id="hm30">--</b></div><div><small>SIGNAL STRENGTH</small><b id="signal">--%</b></div><div><small>LATENCY</small><b id="latency">-- ms</b></div><div><small>PACKET LOSS</small><b id="packetloss">--%</b></div><div><small>LAST PACKET</small><b id="lastpacket">--</b></div></div>
+  </article>
+</section>
+<section class="grid two">
+  <article class="card" id="camera"><div class="section-head"><div><div class="eyebrow">VIDEO SYSTEM</div><h2>Camera Feed</h2></div><span class="tag red">UNAVAILABLE</span></div><div class="video-placeholder"><div class="camera-icon">▣</div><b>NO CAMERA HARDWARE CONNECTED</b><p>C20 / SIYI HM30 video integration placeholder</p><small>Connect a video receiver and configure its stream URL for live video.</small></div></article>
+  <article class="card"><div class="section-head"><div><div class="eyebrow">FLIGHT PERFORMANCE</div><h2>Altitude & Speed Trend</h2></div><span class="tag">LIVE DEMO</span></div><canvas id="trendChart"></canvas></article>
+</section>
+<section class="card" id="alerts"><div class="section-head"><div><div class="eyebrow">SYSTEM EVENTS</div><h2>Alerts & Flight Logs</h2></div><a class="export" href="/api/export">↓ Export CSV</a></div><div id="alertList" class="alert-list"></div><div class="table-wrap"><table><thead><tr><th>TIME</th><th>ALTITUDE</th><th>SPEED</th><th>GPS</th><th>BATTERY</th><th>ALERTS</th></tr></thead><tbody id="history"></tbody></table></div></section>
+<footer>SKY GUARDIANS · VTOL DRONE MONITORING PROTOTYPE <span id="updated">Waiting for first update</span></footer>
+</main>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body></html>
